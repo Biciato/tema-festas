@@ -12,7 +12,10 @@ const Sizes = [
     'grande',
 ]
 
-function Size() {
+function Size(props) {
+    if (props.product.value === 'saia') {
+        return null;
+    }
     let sizeList = []; 
     Sizes.map((item) =>
         sizeList.push({value: item, label: item})
