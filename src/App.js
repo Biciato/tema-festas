@@ -10,6 +10,8 @@ import OrderList from './OrderList';
 import Container from 'react-bootstrap/Container';
 import QuantitySelect from './QuantitySelect';
 import Product from './models/Product';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 class App extends React.Component {
     constructor(props) {
@@ -72,22 +74,18 @@ class App extends React.Component {
         return (
             <Container id="App" fluid="true">
                 <ProductSelect onProductChange={this.handleProductChange}/>
-                <hr></hr>
                 <SizeSelect product={product} onSizeChange={this.handleSizeChange}/>
-                <hr></hr>
                 <ColorSelect product={product} onColorChange={this.handleColorChange}/>
-                <hr></hr>
                 <ThemeSelect product={product} onThemeChange={this.handleThemeChange}/>
-                <hr></hr>
                 <NumberSelect product={product} onNumberChange={this.handleNumberChange}/>
-                <hr></hr>
                 <QuantitySelect product={product} onQtyChange={this.handleQtyChange}/>
-                <hr></hr>
                 <AddButton product={product} onAddBtnClick={this.handleAddBtnClick}/>
-                <hr></hr>
                 {prodList}
-                <hr></hr>
-                <h5>Total: <span>{prodList.length < 1 ? '0,00' : '100,00'}</span></h5>
+                <Row bsPrefix="row m-1">
+                    <Col>
+                        <h5>Total Pedido: <span>{prodList.length < 1 ? '0,00' : '100,00'}</span></h5>
+                    </Col>
+                </Row>                
             </Container>
         )
     }
