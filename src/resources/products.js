@@ -1,8 +1,7 @@
-export default [
+const Products = [
     "Sacola",
     "Cachepot",
     "Saia",
-    "Forminha luxo",
     "Forminha luxo",
     "Forminha",
     "Vela X-Fire",
@@ -32,3 +31,5 @@ export default [
     "fechamento de envelope",
     "lança confete"
 ];
+
+export default Products;

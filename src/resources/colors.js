@@ -1,4 +1,4 @@
-export default {
+const Colors = {
     default : [
         "laranja",
         "verde",
@@ -38,3 +38,4 @@ export default {
     ]
 };
 
+export default Colors;

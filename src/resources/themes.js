@@ -1,4 +1,4 @@
-export default [
+const Themes = [
     "coroa",
     "game",
     "laço",
@@ -25,3 +25,5 @@ export default [
     "melancia",
     "ouro"
 ];
+
+export default Themes;
