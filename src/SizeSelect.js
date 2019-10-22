@@ -5,14 +5,26 @@ import Select from 'react-select';
 
 const Sizes = [
     'surpresa',
-    'micro',
     'mini',
-    'pequeno',
-    'médio',
     'grande',
 ]
 
-class SizeSelect extends React.Component {
+function TypeList(props) {
+    const size = props.size;
+    return(
+        <Row bsPrefix="row m-1">
+            <Col>
+                <label className="label bg-danger">{size}</label>
+                <Select />
+                <div>
+
+                </div>
+            </Col>
+        </Row>
+    );
+}
+
+export default class SizeSelect extends React.Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
@@ -22,17 +34,8 @@ class SizeSelect extends React.Component {
     }
     render() {
         if (!this.props.product.value){return null;}
-        let sizeList = []; 
-        Sizes.map((item) => sizeList.push({value: item, label: item}));
-        return (
-            <Row bsPrefix="row m-1">
-                <Col>
-                    <label className="label bg-danger">Tamanho</label>
-                    <Select options={sizeList} onChange={this.handleChange}/>
-                </Col>
-            </Row>
-        );
+        const sizeBoxes = Sizes.map((item) => <TypeList size={item}/>);
+        return ({sizeBoxes});
     }
 }
 
-export default SizeSelect;

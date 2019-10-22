@@ -33,7 +33,6 @@ class App extends React.Component {
             productList: []
         };
     }
-
     handleProductChange(product) {
         this.setState({product});
     }
@@ -52,7 +51,6 @@ class App extends React.Component {
     handleQtyChange(qty) {
         this.setState({qty});
     }
-
     handleAddBtnClick() {
         let productList = this.state.productList;
         const product = new Product(
@@ -75,9 +73,6 @@ class App extends React.Component {
             <Container id="App" fluid="true">
                 <ProductSelect onProductChange={this.handleProductChange}/>
                 <SizeSelect product={product} onSizeChange={this.handleSizeChange}/>
-                <ColorSelect product={product} onColorChange={this.handleColorChange}/>
-                <ThemeSelect product={product} onThemeChange={this.handleThemeChange}/>
-                <NumberSelect product={product} onNumberChange={this.handleNumberChange}/>
                 <QuantitySelect product={product} onQtyChange={this.handleQtyChange}/>
                 <AddButton product={product} onAddBtnClick={this.handleAddBtnClick}/>
                 {prodList}
@@ -85,7 +80,7 @@ class App extends React.Component {
                     <Col>
                         <h5>Total Pedido: <span>{prodList.length < 1 ? '0,00' : '100,00'}</span></h5>
                     </Col>
-                </Row>                
+                </Row>
             </Container>
         )
     }
