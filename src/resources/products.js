@@ -1,4 +1,4 @@
-const Products = [
+export const Products = [
     "Sacola",
     "Cachepot",
     "Saia",
@@ -31,5 +31,3 @@ const Products = [
     "fechamento de envelope",
     "lança confete"
 ];
-
-export default Products;

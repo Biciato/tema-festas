@@ -1,4 +1,4 @@
-class Product {
+export default class Product {
     constructor(product, size, qty, color, theme, number) {    
         this.product = product;
         this.size = size;
@@ -18,5 +18,3 @@ class Product {
         ];
     }
 }
-
-export default Product;

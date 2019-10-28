@@ -3,8 +3,8 @@ import App from '../App';
 import renderer from 'react-test-renderer';
 
 test('App starts only with Product selection', () => {
-  const component = renderer.create(
-    <App />,
+  const component = renderer.create( <
+    App / > ,
   );
   let tree = component.toJSON();
   expect(tree).toMatchSnapshot();
