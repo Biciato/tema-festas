@@ -19,17 +19,17 @@ export default class TypeComponent extends React.Component {
     this.showModal = this.showModal.bind(this)
     this.handleAccept = this.handleAccept.bind(this)
     this.handleClose = this.handleClose.bind(this)
-    this.state = {type:''}
+    this.state = {type:'', modal: false, toast: false}
   }
 
   handleTypeChange(type) {
-    this.setState({type})
+    this.setState({type: type.value})
   }
   handleSubtypeChange(subtype) {
-    this.props.onSubtypeSet({[this.state.type]: subtype})
+    this.setState(subtype)
   }
   handleAccept() {
-    this.props.onSubtypeChange(this.state)
+    this.props.onSubtypeSet(this.state.subtype)
     this.setState({modal: false})
     this.setState({toast: true})
   }
@@ -49,7 +49,7 @@ export default class TypeComponent extends React.Component {
             className: 'label bg-danger',
             key: 1
           }, 'Subtipo'),
-          e(TypeSelect,{onTypeChange: this.handleTypeChange, onSubtypeUpdate: this.handleSubtypeChange}),
+          e(TypeSelect,{onTypeChange: this.handleTypeChange}),
           e(InputGroup, {key: 3 , className: this.state.typeArr === null ? 'd-none' : ''}, [
             e(InputGroup.Prepend, {key: 'i-1'}, 
               e(InputGroup.Text, null, 'R$')),

@@ -4,6 +4,9 @@ import Col from 'react-bootstrap/Col';
 import Badge from 'react-bootstrap/Badge';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
+import {
+  Types
+} from '../resources/types'
 
 import './TypeList.scss';
 
@@ -13,22 +16,19 @@ export default class TypeList extends React.Component {
   constructor(props) {
     super(props)
     this.handleQtyChange = this.handleQtyChange.bind(this)
-    this.handleAccept = this.handleAccept.bind(this)
-    this.handleClose = this.handleClose.bind(this)
-    this.showModal = this.showModal.bind(this)
-    this.state = {modal:false, toast: false}
   }
   handleQtyChange(e) {
     this.setState({
       [e.target.attributes.data.value]: e.target.value
-    });
+    }, () => this.props.onSubtypeChange({subtype: this.state}));    
   }
 
   render() {
     if (!this.props.type) {
       return null;
     }
-    return Object.keys(this.props.type).map((item, idx) => {
+    const types = this.props.type === 'number' ? [...Array(10).keys()].map(x => ++x) : Types[this.props.type];
+    return types.map((item) => {
       return e(
         Row, null,
         e(Col, null, [

@@ -17,10 +17,18 @@ export default class ProductSelect extends React.Component {
     this.props.onProductChange(product)
   }
   render() {
-    const prodList = Products.map((item) => ({
-      value: item,
-      label: item
-    }))
+    const prodList = Object.assign(
+      {}, 
+      Products.categories[0],
+      Products.categories[1],
+      Products.categories[2],
+      Products.categories[3]
+    )
+    /* const prodListToArr = prodList.map((item) => Object.keys(item).map((i) => ({
+      value: i,
+      label: i
+    }))) */
+    console.log(prodList)
     return (
       e(Row, {
           bsPrefix: 'row m-1'
@@ -32,7 +40,7 @@ export default class ProductSelect extends React.Component {
               key: 1
             }, 'Produto'),
             e(Select, {
-              options: prodList,
+              options: Object.keys(prodList).map((item) => ({value: item, label: item})),
               onChange: this.handleChange,
               key: 2
             })
