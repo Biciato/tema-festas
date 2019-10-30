@@ -7,7 +7,7 @@ import FormControl from 'react-bootstrap/FormControl';
 import {
   Types
 } from '../resources/types'
-
+import { Products } from '../resources/products'
 import './TypeList.scss';
 
 const e = React.createElement
@@ -22,15 +22,25 @@ export default class TypeList extends React.Component {
       [e.target.attributes.data.value]: e.target.value
     }, () => this.props.onSubtypeChange({subtype: this.state}));    
   }
+  getProdCategory() {
+    return [0, 1, 2, 3].filter((item) => Products.categories[item][this.props.prodName])[0];
+  }
 
   render() {
+    let types = [];
+
     if (!this.props.type) {
       return null;
-    }
-    const types = this.props.type === 'number' ? [...Array(10).keys()].map(x => ++x) : Types[this.props.type];
-    return types.map((item) => {
+    } else if (this.props.type === 'etiquetas') {
+      types = Products.categories[3].etiquetas.names;
+    } else if (!Types.hasOwnProperty(this.props.type)) {
+      types = Products.categories[2][this.props.type].map((item) => item.name)
+    } else {
+      types = this.props.type === 'number' ? [...Array(10).keys()].map(x => ++x) : Types[this.props.type];
+    }    
+    return types.map((item, idx) => {
       return e(
-        Row, null,
+        Row, {key: idx},
         e(Col, null, [
           e(Badge, {
             variant: 'info',

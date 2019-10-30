@@ -49,7 +49,11 @@ export default class TypeComponent extends React.Component {
             className: 'label bg-danger',
             key: 1
           }, 'Subtipo'),
-          e(TypeSelect,{onTypeChange: this.handleTypeChange}),
+          e(TypeSelect,{
+            onTypeChange: this.handleTypeChange, 
+            key: 2,
+            prodName: this.props.prodName
+          }),
           e(InputGroup, {key: 3 , className: this.state.typeArr === null ? 'd-none' : ''}, [
             e(InputGroup.Prepend, {key: 'i-1'}, 
               e(InputGroup.Text, null, 'R$')),
@@ -58,24 +62,34 @@ export default class TypeComponent extends React.Component {
               e(InputGroup.Text, null, '.00'))
           ]),
           e(TypeList, {
-            type: this.state.type,
+            type: this.state.type === 'Não Possui' ? this.props.prodName : this.state.type,
             key: 4,
             style: {borderBottom: 'none'},
             onSubtypeChange: this.handleSubtypeChange
           }),
-          e(Button, {style: {display: this.state.type === '' ? 'none' : ''}, key: 'b-3', onClick: this.showModal}, 'Incluir'),
-          e(Modal, {show: this.state.modal, onHide: this.handleClose}, [
-            e(Modal.Header, {closeButton: true}, 
+          e(Button, {
+            style: {
+              display: this.state.type === '' ? 'none' : ''
+            }, 
+            key: 5, 
+            onClick: this.showModal
+          }, 'Incluir'),
+          e(Modal, {show: this.state.modal, onHide: this.handleClose, key: 6}, [
+            e(Modal.Header, {closeButton: true, key: 'm-1'}, 
               e(Modal.Title, null, 'Confirmação de inclusão')),
-            e(Modal.Body, null, 'Tem certeza que deseja incluir esses itens ?'),
-            e(Modal.Footer, null, [
-              e(Button, {variant: 'danger', onClick: this.handleClose}, 'Cancelar'),
-              e(Button, {variant: 'success', onClick: this.handleAccept}, 'Aceitar')
+            e(Modal.Body, {key: 'm-2'}, 'Tem certeza que deseja incluir esses itens ?'),
+            e(Modal.Footer, {key: 'm-3'}, [
+              e(Button, {variant: 'danger', onClick: this.handleClose, key: 'mb-1'}, 'Cancelar'),
+              e(Button, {variant: 'success', onClick: this.handleAccept, key: 'mb-2'}, 'Aceitar')
             ])
           ]),
-          e(Toast, {show: this.state.toast, delay: 3000, autohide: true, onClose: this.handleClose }, [
-            e(Toast.Body, null, 'Itens incluso com sucesso !!!')
-          ])
+          e(Toast, {
+            show: this.state.toast, 
+            delay: 3000, 
+            autohide: true, 
+            onClose: this.handleClose, 
+            key: 7 
+          }, e(Toast.Body, null, 'Itens incluso com sucesso !!!'))
         ])
       )
     )

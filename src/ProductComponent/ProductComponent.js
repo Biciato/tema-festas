@@ -33,20 +33,21 @@ export default class ProductComponent extends React.Component {
       }
     };
   }
-  handleProductChange(product) {
+  handleProductChange(prodName) {
     this.setState({
       product: {
-        category: product.value},
+        category: prodName.value},
       size: {
         sizeCpt: SizeSelect,
         sizeProps: {
+          product: prodName.value,
           onSizeChange: this.handleSizeChange,
           key: 2
         }
       }
     });
   }
-  handleSizeChange(size) {
+  handleSizeChange(size, prodName) {
     const product = Object.assign({
       size: size.value
     }, this.state.product);
@@ -55,6 +56,7 @@ export default class ProductComponent extends React.Component {
       type: {
         typeCpt: TypeComponent,
         typeProps: {
+          prodName,
           onSubtypeSet: this.handleSubtypeSet,
           key: 3
         }

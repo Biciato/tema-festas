@@ -24,11 +24,6 @@ export default class ProductSelect extends React.Component {
       Products.categories[2],
       Products.categories[3]
     )
-    /* const prodListToArr = prodList.map((item) => Object.keys(item).map((i) => ({
-      value: i,
-      label: i
-    }))) */
-    console.log(prodList)
     return (
       e(Row, {
           bsPrefix: 'row m-1'
