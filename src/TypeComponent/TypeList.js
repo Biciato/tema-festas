@@ -28,15 +28,14 @@ export default class TypeList extends React.Component {
 
   render() {
     let types = [];
-
     if (!this.props.type) {
       return null;
     } else if (this.props.type === 'etiquetas') {
       types = Products.categories[3].etiquetas.names;
-    } else if (!Types.hasOwnProperty(this.props.type)) {
+    } else if (!Types.hasOwnProperty(this.props.type) && this.props.type !== 'número') {
       types = Products.categories[2][this.props.type].map((item) => item.name)
     } else {
-      types = this.props.type === 'number' ? [...Array(10).keys()].map(x => ++x) : Types[this.props.type];
+      types = this.props.type === 'número' ? [...Array(10).keys()].map(x => ++x) : Types[this.props.type];
     }    
     return types.map((item, idx) => {
       return e(

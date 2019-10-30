@@ -8,6 +8,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
+import { Products } from '../resources/products'
 
 const e = React.createElement
 
@@ -40,6 +41,27 @@ export default class TypeComponent extends React.Component {
     this.setState({modal: false})
     this.setState({toast: false})
   }
+  getProdCategory() {
+    return [0, 1, 2, 3].filter((item) => Products.categories[item][this.props.prodName])[0];
+  }
+  getProdPrice() {
+    let price;
+    switch(this.getProdCategory()) {
+      case 0:
+        price = Products[0][this.props.prodName].size
+          .filter((item) => item.name === this.props.size) 
+          break;
+      case 1:
+        price = Products[1][this.props.prodName].price  
+        break;
+      case 2:
+        price = null;
+        break;
+      default:
+        price = 0.00;
+    }
+    return price;
+  }
 
   render() {
     return (
@@ -57,7 +79,7 @@ export default class TypeComponent extends React.Component {
           e(InputGroup, {key: 3 , className: this.state.typeArr === null ? 'd-none' : ''}, [
             e(InputGroup.Prepend, {key: 'i-1'}, 
               e(InputGroup.Text, null, 'R$')),
-            e(FormControl, {key: 'i-2'}),
+            e(FormControl, {key: 'i-2', value: this.getProdPrice()}),
             e(InputGroup.Append, {key: 'i-3'}, 
               e(InputGroup.Text, null, '.00'))
           ]),
