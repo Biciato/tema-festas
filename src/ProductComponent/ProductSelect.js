@@ -28,18 +28,18 @@ export default class ProductSelect extends React.Component {
       e(Row, {
           bsPrefix: 'row m-1'
         },
-        e(Col, null,
-          [
-            e('label', {
-              className: 'label bg-success',
-              key: 1
-            }, 'Produto'),
-            e(Select, {
-              options: Object.keys(prodList).map((item) => ({value: item, label: item})),
-              onChange: this.handleChange,
-              key: 2
-            })
-          ]
-        )))
+        e(Col, null, [
+          e('label', {
+            className: 'label bg-success',
+            key: 1
+          }, 'Produto'),
+          e(Select, {
+            options: Object.keys(prodList).map((item) => ({value: item, label: item})),
+            onChange: this.handleChange,
+            key: 2
+          })
+        ])
+      )
+    )
   }
 }

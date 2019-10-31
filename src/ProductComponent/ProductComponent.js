@@ -3,6 +3,8 @@ import ProductSelect from "./ProductSelect";
 import SizeSelect from "./SizeSelect";
 import TypeComponent from "../TypeComponent/TypeComponent";
 import ErrorBoundary from "../ErrorBoundary/ErrorBoundary";
+import Container from 'react-bootstrap/Container';
+import TotalComponent from './TotalComponent';
 
 const e = React.createElement;
 
@@ -24,12 +26,6 @@ export default class ProductComponent extends React.Component {
         typeProps: {
           key: 3
         }
-      },
-      addBtn: {
-        addBtnCpt: "div",
-        addBtnProps: {
-          key: 4
-        }
       }
     };
   }
@@ -44,6 +40,12 @@ export default class ProductComponent extends React.Component {
           onSizeChange: this.handleSizeChange,
           key: 2
         }
+      },
+      type: {
+        typeCpt: "div",
+        typeProps: {
+          key: 3
+        }
       }
     });
   }
@@ -56,6 +58,7 @@ export default class ProductComponent extends React.Component {
       type: {
         typeCpt: TypeComponent,
         typeProps: {
+          size: size.value,
           prodName,
           onSubtypeSet: this.handleSubtypeSet,
           key: 3
@@ -68,13 +71,18 @@ export default class ProductComponent extends React.Component {
     this.setState({ product });
   }
   render() {
-    return e(ErrorBoundary, null, [
-      e(ProductSelect, {
-        onProductChange: this.handleProductChange,
-        key: 1
-      }),
-      e(this.state.size.sizeCpt, this.state.size.sizeProps),
-      e(this.state.type.typeCpt, this.state.type.typeProps)
-    ]);
+    return (
+      e(ErrorBoundary, null,
+        e(Container, { fluid: true }, [
+          e(ProductSelect, {
+            onProductChange: this.handleProductChange,
+            key: 1
+          }),
+          e(this.state.size.sizeCpt, this.state.size.sizeProps),
+          e(this.state.type.typeCpt, this.state.type.typeProps),
+          e(TotalComponent)
+        ])
+      )
+    );
   }
 }

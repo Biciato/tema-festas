@@ -19,11 +19,25 @@ export default class TypeList extends React.Component {
   }
   handleQtyChange(e) {
     this.setState({
-      [e.target.attributes.data.value]: e.target.value
+      [e.target.attributes.data.value]: {
+        qty: e.target.value
+      }
+    }, () => this.props.onSubtypeChange({subtype: this.state}));    
+  }
+  handlePriceChange(e) {
+    this.setState({
+      [e.target.attributes.data.value]: {
+        price: e.target.value
+      }
     }, () => this.props.onSubtypeChange({subtype: this.state}));    
   }
   getProdCategory() {
-    return [0, 1, 2, 3].filter((item) => Products.categories[item][this.props.prodName])[0];
+    return [0, 1, 2, 3].filter((item) => Products.categories[item][this.props.type])[0];
+  }
+  getItemPrice(item) {
+    return Products.categories[2][this.props.type]
+      .filter((i) => i.name === item)
+      .map((i) => i.price);
   }
 
   render() {
@@ -45,9 +59,31 @@ export default class TypeList extends React.Component {
             variant: 'info',
             key: 'b-1'
           }, item),
-          e(InputGroup, {key: 'b-2', size: 'sm'}, [
+          e(InputGroup, {
+              key: 'b-2', 
+              size: 'sm', 
+              className: this.getProdCategory() !== 2 ? 'd-none' : '' 
+            }, [
+              e(InputGroup.Prepend, {key: 'c-1'}, e(InputGroup.Text, null, 'Preço')),
+              e(FormControl, {
+                key: 'c-2', min: 0, 
+                onChange: this.handlePriceChange, 
+                data: item, 
+                value: this.getProdCategory() !== 2 
+                          ? '' 
+                          : parseFloat(this.getItemPrice(item)).toFixed(2)
+              })
+            ]
+          ),
+          e(InputGroup, {key: 'b-3', size: 'sm'}, [
             e(InputGroup.Prepend, {key: 'c-1'}, e(InputGroup.Text, null, 'Quantidade')),
-            e(FormControl, {key: 'c-2', type: 'number', min: 0, onChange: this.handleQtyChange, data: item})
+            e(FormControl, {
+              key: 'c-2', 
+              type: 'number', 
+              min: 0, 
+              onChange: this.handleQtyChange, 
+              data: item
+            })
           ])
         ])
       )
