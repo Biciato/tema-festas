@@ -14,7 +14,7 @@ export default class ProductSelect extends React.Component {
     this.handleChange = this.handleChange.bind(this)
   }
   handleChange(product) {
-    this.props.onProductChange(product)
+    this.props.onProductChange(product.value)
   }
   render() {
     const prodList = Object.assign(

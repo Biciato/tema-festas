@@ -1,9 +1,6 @@
 import React from 'react';
 import TypeSelect from './TypeSelect';
 import TypeList from './TypeList';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Toast from 'react-bootstrap/Toast';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -17,54 +14,41 @@ export default class TypeComponent extends React.Component {
     super(props)
     this.handleTypeChange = this.handleTypeChange.bind(this)
     this.handleSubtypeChange = this.handleSubtypeChange.bind(this)
-    this.showModal = this.showModal.bind(this)
-    this.handleAccept = this.handleAccept.bind(this)
-    this.handleClose = this.handleClose.bind(this)
-    this.state = { type: '', modal: false, toast: false }
+    this.state = { type: '' }
   }
 
   handleTypeChange(type) {
-    this.setState({ type: type.value })
+    this.setState({ 
+      type }, 
+      () => this.props.onTypeChange(type, this.props.prodName)
+    )
   }
   handleSubtypeChange(subtype) {
-    this.setState(subtype)
+    this.setState(subtype, () => {
+      this.props.onSubtypeSet(this.state, this.props.prodName)
+    });
   }
   handlePriceChange(price) {
     this.setState(price)
   }
-  handleAccept() {
-    this.props.onSubtypeSet(this.state.subtype)
-    this.setState({ modal: false })
-    this.setState({ toast: true })
-  }
-  showModal() {
-    this.setState({ modal: true })
-  }
-  handleClose() {
-    this.setState({ modal: false })
-    this.setState({ toast: false })
-  }
   getProdCategory() {
-    return [0, 1, 2, 3].filter((item) => Products.categories[item][this.props.prodName])[0];
+    return [0, 1, 2, 3].find((item) => 
+      Products.categories[item][this.props.prodName]
+    );
   }
   getProdPrice() {
-    let price;
     switch (this.getProdCategory()) {
       case 0:
-        price = Products.categories[0][this.props.prodName].size
+        return Products.categories[0][this.props.prodName].size
           .filter((item) => item.name === this.props.size)
           .map((item) => item.price)
-        break;
       case 1:
-        price = Products.categories[1][this.props.prodName].price
-        break;
+        return Products.categories[1][this.props.prodName].price
       case 2:
-        price = null;
-        break;
+        return null;
       default:
-        price = 1.50;
+        return 1.50;
     }
-    return price;
   }
 
   render() {
@@ -98,40 +82,7 @@ export default class TypeComponent extends React.Component {
             key: 4,
             style: { borderBottom: 'none' },
             onSubtypeChange: this.handleSubtypeChange
-          }),
-          e(Button, {
-            style: {
-              display: this.state.type === '' ? 'none' : ''
-            },
-            key: 5,
-            onClick: this.showModal
-          }, 'Incluir'),
-          e(Modal, { show: this.state.modal, onHide: this.handleClose, key: 6 }, [
-            e(Modal.Header, { closeButton: true, key: 'm-1' },
-              e(Modal.Title, null, 'Confirmação de inclusão')),
-            e(Modal.Body, { key: 'm-2' }, 'Tem certeza que deseja incluir esses itens ?'),
-            e(Modal.Footer, { key: 'm-3' }, [
-              e(Button, { 
-                  variant: 'danger', 
-                  onClick: this.handleClose, 
-                  key: 'mb-1' 
-                }, 'Cancelar'
-              ),
-              e(Button, { 
-                  variant: 'success', 
-                  onClick: this.handleAccept, 
-                  key: 'mb-2' 
-                }, 'Aceitar'
-              )
-            ])
-          ]),
-          e(Toast, {
-            show: this.state.toast,
-            delay: 3000,
-            autohide: true,
-            onClose: this.handleClose,
-            key: 7
-          }, e(Toast.Body, null, 'Itens incluso com sucesso !!!'))
+          })
         ])
       )
     )

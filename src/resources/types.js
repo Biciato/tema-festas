@@ -46,7 +46,7 @@ export const Types = {
     "neon pink",
     "neon laranja"
   ],
-  themes: [
+  temas: [
     "coroa",
     "game",
     "laço",

@@ -24,10 +24,10 @@ export default class SizeSelect extends React.Component {
       label: size.value,
       value: size.value
     }]})
-    this.props.onSizeChange(size, this.props.product);
+    this.props.onSizeChange(size.value, this.props.product);
   }
   getProdCategory() {
-    return [0, 1, 2, 3].filter((item) => Products.categories[item][this.props.product]);
+    return [0, 1, 2, 3].find((item) => Products.categories[item][this.props.product]);
   }
   prodHasSize(category) {
     return Products.categories[category][this.props.product].size ? true : false;

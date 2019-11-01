@@ -5,6 +5,7 @@ import TypeComponent from "../TypeComponent/TypeComponent";
 import ErrorBoundary from "../ErrorBoundary/ErrorBoundary";
 import Container from 'react-bootstrap/Container';
 import TotalComponent from './TotalComponent';
+import { Products } from '../resources/products'
 
 const e = React.createElement;
 
@@ -14,6 +15,9 @@ export default class ProductComponent extends React.Component {
     this.handleProductChange = this.handleProductChange.bind(this);
     this.handleSizeChange = this.handleSizeChange.bind(this);
     this.handleSubtypeSet = this.handleSubtypeSet.bind(this);
+    this.handleTypeChange = this.handleTypeChange.bind(this);
+    this.getCategorySet = this.getCategorySet.bind(this);
+    this.getProdPrice = this.getProdPrice.bind(this);
     this.state = {
       size: {
         sizeCpt: "div",
@@ -31,12 +35,14 @@ export default class ProductComponent extends React.Component {
   }
   handleProductChange(prodName) {
     this.setState({
-      product: {
-        category: prodName.value},
+      [prodName] : {
+        tipo_categoria: this.getProdCategory(prodName),
+        dados: ''
+      },
       size: {
         sizeCpt: SizeSelect,
         sizeProps: {
-          product: prodName.value,
+          product: prodName,
           onSizeChange: this.handleSizeChange,
           key: 2
         }
@@ -47,29 +53,81 @@ export default class ProductComponent extends React.Component {
           key: 3
         }
       }
-    });
+    }, () => {
+      if ( [1,3].includes(this.state[prodName].tipo_categoria) ) {
+        const prod = Object.assign({}, this.state[prodName], {
+          valor_unitario: this.getProdPrice(prodName)
+        })
+        this.setState({
+          [prodName] : prod
+        });
+      }
+    });    
   }
   handleSizeChange(size, prodName) {
-    const product = Object.assign({
-      size: size.value
-    }, this.state.product);
+    if (size !== 'único') {
+      this.setState({ 
+        [prodName] : Object.assign({}, this.state[prodName], {
+          dados: {
+            [size]: null 
+          }                      
+        }) 
+      });
+    }
     this.setState({
-      product,
       type: {
         typeCpt: TypeComponent,
         typeProps: {
-          size: size.value,
+          key: 3,
+          size,
           prodName,
           onSubtypeSet: this.handleSubtypeSet,
-          key: 3
+          onTypeChange: this.handleTypeChange
         }
       }
-    });
+    })
   }
-  handleSubtypeSet(subtype) {
-    const product = Object.assign({}, this.state.product, subtype); 
-    this.setState({ product });
+  handleTypeChange(type, prodName) {
+    let prod = Object.assign(
+      {}, 
+      this.state
+    );
+    if ( this.getProdCategory(prodName) === 0 ) {
+      prod[prodName].dados[this.state.type.typeProps.size] = {
+        [type] : null,
+        valor_unitario: this.getProdPrice(prodName)
+      };
+      this.setState(prod);
+    } else if ( this.getProdCategory(prodName) === 1 ) {
+      prod[prodName].dados = {
+        [type] : null
+      };
+      this.setState(prod);
+    }
   }
+  handleSubtypeSet(subtype, prodName) {
+
+  }
+  getCategorySet(categoryName) {
+    return Object.keys(this.state.categorias).find((item) =>
+      item === categoryName  
+    );
+  }
+  getProdCategory(prodName) {
+    return [0, 1, 2, 3].find((item) => 
+      Products.categories[item][prodName]
+    );
+  }
+  getProdPrice(prodName) {
+    if (this.getProdCategory(prodName) === 0) {
+      return Products.categories[0][prodName].size.find((item) =>
+        item.name === this.state.type.typeProps.size
+      ).price
+    } else {
+      return Products.categories[this.getProdCategory(prodName)][prodName].price;
+    }    
+  }
+    
   render() {
     return (
       e(ErrorBoundary, null,

@@ -10,14 +10,14 @@ export default class TypeSelect extends React.Component {
     this.handleSubtypeChange = this.handleSubtypeChange.bind(this)
   }
   handleSubtypeChange(subtype) {
-    this.props.onTypeChange(subtype)
+    this.props.onTypeChange(subtype.value, this.props.prodName)
   }
   getProdCategory() {
     return [0, 1, 2, 3].filter((item) => Products.categories[item][this.props.prodName])[0];
   }
   render() {
     const list = [0, 1].includes(this.getProdCategory()) 
-      ? ['poa', 'liso', 'número', 'themes'].map((item) => ({
+      ? ['poa', 'liso', 'número', 'temas'].map((item) => ({
         value: item,
         label: item
       }))
