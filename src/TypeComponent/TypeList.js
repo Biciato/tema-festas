@@ -16,28 +16,54 @@ export default class TypeList extends React.Component {
   constructor(props) {
     super(props)
     this.handleQtyChange = this.handleQtyChange.bind(this)
+    this.handlePriceChange = this.handlePriceChange.bind(this)
+    this.state = {subtypeObj: {}};
   }
   handleQtyChange(e) {
-    this.setState({
-      [e.target.attributes.data.value]: {
-        qty: e.target.value
+    let subtypeObj = {};
+    if (this.getProdCategory() === 2) {
+      subtypeObj = {
+        [e.target.attributes.data.value]: {
+          qty: e.target.value,
+          price: this.state.subtypeObj[e.target.attributes.data.value] &&
+                 this.state.subtypeObj[e.target.attributes.data.value].price
+            ? this.state.subtypeObj[e.target.attributes.data.value].price
+            : parseFloat(this.getItemPrice(e.target.attributes.data.value)).toFixed(2)
+        }
       }
-    }, () => this.props.onSubtypeChange({subtype: this.state}));    
+    } else {
+      subtypeObj = {
+        [e.target.attributes.data.value]: {
+          qty: e.target.value
+        }
+      }
+    }    
+    this.setState({subtypeObj}, () => 
+      this.props.onSubtypeChange({subtype: this.state})
+    );    
   }
   handlePriceChange(e) {
-    this.setState({
+    const subtypeObj = {
       [e.target.attributes.data.value]: {
-        price: e.target.value
+        qty: this.state.subtypeObj[e.target.attributes.data.value] &&
+             this.state.subtypeObj[e.target.attributes.data.value].qty
+        ? this.state.subtypeObj[e.target.attributes.data.value].qty
+        : 0,
+        price: parseFloat(e.target.value).toFixed(2)
       }
-    }, () => this.props.onSubtypeChange({subtype: this.state}));    
+    }
+    this.setState({subtypeObj}, () => 
+      this.props.onSubtypeChange({subtype: this.state})
+    );    
   }
   getProdCategory() {
-    return [0, 1, 2, 3].filter((item) => Products.categories[item][this.props.type])[0];
+    return [0, 1, 2, 3].find((item) => Products.categories[item][this.props.type]);
   }
   getItemPrice(item) {
     return Products.categories[2][this.props.type]
       .filter((i) => i.name === item)
-      .map((i) => i.price);
+      .map((i) => i.price)
+      .shift();
   }
 
   render() {
@@ -49,7 +75,7 @@ export default class TypeList extends React.Component {
     } else if (!Types.hasOwnProperty(this.props.type) && this.props.type !== 'número') {
       types = Products.categories[2][this.props.type].map((item) => item.name)
     } else {
-      types = this.props.type === 'número' ? [...Array(10).keys()].map(x => ++x) : Types[this.props.type];
+      types = this.props.type === 'números' ? [...Array(10).keys()].map(x => ++x) : Types[this.props.type];
     }    
     return types.map((item, idx) => {
       return e(
@@ -69,7 +95,7 @@ export default class TypeList extends React.Component {
                 key: 'c-2', min: 0, 
                 onChange: this.handlePriceChange, 
                 data: item, 
-                value: this.getProdCategory() !== 2 
+                placeholder: this.getProdCategory() !== 2 
                           ? '' 
                           : parseFloat(this.getItemPrice(item)).toFixed(2)
               })

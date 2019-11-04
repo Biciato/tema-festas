@@ -68,9 +68,9 @@ export default class ProductComponent extends React.Component {
     if (size !== 'único') {
       this.setState({ 
         [prodName] : Object.assign({}, this.state[prodName], {
-          dados: {
-            [size]: null 
-          }                      
+          dados: Object.assign({}, this.state[prodName].dados, {
+            [size]: null        
+          })                      
         }) 
       });
     }
@@ -88,25 +88,96 @@ export default class ProductComponent extends React.Component {
     })
   }
   handleTypeChange(type, prodName) {
-    let prod = Object.assign(
-      {}, 
-      this.state
-    );
+    let prod = Object.assign({}, this.state);
     if ( this.getProdCategory(prodName) === 0 ) {
-      prod[prodName].dados[this.state.type.typeProps.size] = {
+      prod[prodName].dados[this.state.type.typeProps.size] = Object.assign({}, this.state[prodName].dados[this.state.type.typeProps.size],{
         [type] : null,
         valor_unitario: this.getProdPrice(prodName)
-      };
+      });
       this.setState(prod);
     } else if ( this.getProdCategory(prodName) === 1 ) {
-      prod[prodName].dados = {
-        [type] : null
-      };
+      const prevDados = this.state[prodName].dados ? this.state[prodName].dados : {};
+      prod[prodName].dados = prevDados;
       this.setState(prod);
     }
   }
-  handleSubtypeSet(subtype, prodName) {
-
+  handleSubtypeSet(typeObj, prodName) {
+    let prod = {};
+    let dados = {};
+    let prevDados = {};
+    let prevSubtypes = {};
+    switch (this.getProdCategory(prodName)) {
+      case 0:
+        prevSubtypes = this.state[prodName].dados[this.state.type.typeProps.size] 
+                              ?  this.state[prodName].dados[this.state.type.typeProps.size][typeObj.type]
+                              : {}; 
+        const subtypes = Object.assign({}, prevSubtypes,{
+          [Object.keys(typeObj.subtype.subtypeObj)[0]] : 
+            typeObj.subtype.subtypeObj[Object.keys(typeObj.subtype.subtypeObj)[0]].qty
+        });
+        const types = Object.assign({}, this.state[prodName].dados[this.state.type.typeProps.size],{
+          [typeObj.type] : subtypes
+        })
+        const sizes = Object.assign({}, this.state[prodName].dados, {
+          [this.state.type.typeProps.size] : types
+        })
+        prod = {
+          [prodName] : {
+            dados : sizes
+            }
+        }
+        break;
+      case 1:
+        prevDados = this.state[prodName].dados ? this.state[prodName].dados : {};
+        prevSubtypes = this.state[prodName].dados[typeObj.type] 
+                              ?  this.state[prodName].dados[typeObj.type]
+                              : {};
+        dados = Object.assign({},prevDados, {
+          [typeObj.type] : Object.assign({}, prevSubtypes, {
+            [Object.keys(typeObj.subtype.subtypeObj)[0]] : 
+              typeObj.subtype.subtypeObj[Object.keys(typeObj.subtype.subtypeObj)[0]].qty
+          })     
+        });
+        prod = {
+          [prodName] : {
+            tipo_categoria : this.state[prodName].tipo_categoria,
+            valor_unitario : this.state[prodName].valor_unitario,
+            dados
+          }
+        }
+        break;
+      case 2:
+        prevDados = this.state[prodName].dados ? this.state[prodName].dados : {};
+        dados = Object.assign({}, prevDados, {
+          [Object.keys(typeObj.subtype.subtypeObj)[0]] : {
+            quantidade : typeObj.subtype.subtypeObj[Object.keys(typeObj.subtype.subtypeObj)[0]].qty,
+            valor_unitario : typeObj.subtype.subtypeObj[Object.keys(typeObj.subtype.subtypeObj)[0]].price
+          }            
+        });
+        prod = {
+          [prodName] : {
+            tipo_categoria : this.state[prodName].tipo_categoria,
+            dados
+          }
+        }
+        break;
+      default:
+        prevDados = this.state[prodName].dados ? this.state[prodName].dados : {};
+        dados = Object.assign({},prevDados, {
+          [Object.keys(typeObj.subtype.subtypeObj)[0]] : 
+              typeObj.subtype.subtypeObj[Object.keys(typeObj.subtype.subtypeObj)[0]].qty
+        });
+        prod = {
+          [prodName] : {
+            tipo_categoria : this.state[prodName].tipo_categoria,
+            valor_unitario : this.state[prodName].valor_unitario,
+            dados
+          }
+        }
+        break;
+    }    
+    this.setState(prod);
+    console.log(this.state);
   }
   getCategorySet(categoryName) {
     return Object.keys(this.state.categorias).find((item) =>

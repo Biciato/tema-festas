@@ -17,7 +17,7 @@ export default class TypeSelect extends React.Component {
   }
   render() {
     const list = [0, 1].includes(this.getProdCategory()) 
-      ? ['poa', 'liso', 'número', 'temas'].map((item) => ({
+      ? ['poa', 'liso', 'números', 'temas'].map((item) => ({
         value: item,
         label: item
       }))
