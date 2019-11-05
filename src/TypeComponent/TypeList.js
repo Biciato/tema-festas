@@ -26,7 +26,7 @@ export default class TypeList extends React.Component {
         [e.target.attributes.data.value]: {
           qty: e.target.value,
           price: this.state.subtypeObj[e.target.attributes.data.value] &&
-                 this.state.subtypeObj[e.target.attributes.data.value].price
+                this.state.subtypeObj[e.target.attributes.data.value].price
             ? this.state.subtypeObj[e.target.attributes.data.value].price
             : parseFloat(this.getItemPrice(e.target.attributes.data.value)).toFixed(2)
         }
@@ -43,13 +43,14 @@ export default class TypeList extends React.Component {
     );    
   }
   handlePriceChange(e) {
+    const price = e.target.value.replace(/\D/,'')
     const subtypeObj = {
       [e.target.attributes.data.value]: {
         qty: this.state.subtypeObj[e.target.attributes.data.value] &&
              this.state.subtypeObj[e.target.attributes.data.value].qty
         ? this.state.subtypeObj[e.target.attributes.data.value].qty
         : 0,
-        price: parseFloat(e.target.value).toFixed(2)
+        price: parseFloat(price).toFixed(2)
       }
     }
     this.setState({subtypeObj}, () => 
@@ -72,7 +73,7 @@ export default class TypeList extends React.Component {
       return null;
     } else if (this.props.type === 'etiquetas') {
       types = Products.categories[3].etiquetas.names;
-    } else if (!Types.hasOwnProperty(this.props.type) && this.props.type !== 'número') {
+    } else if (!Types.hasOwnProperty(this.props.type) && this.props.type !== 'números') {
       types = Products.categories[2][this.props.type].map((item) => item.name)
     } else {
       types = this.props.type === 'números' ? [...Array(10).keys()].map(x => ++x) : Types[this.props.type];
@@ -92,12 +93,14 @@ export default class TypeList extends React.Component {
             }, [
               e(InputGroup.Prepend, {key: 'c-1'}, e(InputGroup.Text, null, 'Preço')),
               e(FormControl, {
-                key: 'c-2', min: 0, 
+                key: 'c-2', 
+                min: 0, 
                 onChange: this.handlePriceChange, 
                 data: item, 
+                type: 'number',
                 placeholder: this.getProdCategory() !== 2 
-                          ? '' 
-                          : parseFloat(this.getItemPrice(item)).toFixed(2)
+                              ? '' 
+                              : parseFloat(this.getItemPrice(item)).toFixed(2)
               })
             ]
           ),
@@ -108,7 +111,7 @@ export default class TypeList extends React.Component {
               type: 'number', 
               min: 0, 
               onChange: this.handleQtyChange, 
-              data: item
+              data: item,
             })
           ])
         ])

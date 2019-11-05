@@ -18,7 +18,7 @@ export default class SizeSelect extends React.Component {
           selectedOption: null
         });
     }
-}
+  }
   handleChange(size) {
     this.setState({selectedOption: [{
       label: size.value,
