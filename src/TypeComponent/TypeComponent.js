@@ -71,11 +71,12 @@ export default class TypeComponent extends React.Component {
       case 0:
         return Products.categories[0][this.props.prodName].size
           .filter((item) => item.name === this.props.size)
-          .map((item) => item.price)[0];
+          .map((item) => item.price)
+          .shift();
       case 1:
-        return parseFloat(Products.categories[1][this.props.prodName].price).toFixed(2);
+        return Products.categories[1][this.props.prodName].price;
       case 2:
-        return null;
+        return 0;
       default:
         return 1.50;
     }

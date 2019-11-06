@@ -69,7 +69,9 @@ export default class ProductComponent extends React.Component {
       this.setState({ 
         [prodName] : {
           dados: Object.assign({}, this.state[prodName].dados, {
-            [size]: null        
+            [size]: this.state[prodName].dados[size] 
+                      ?  Object.assign({}, this.state[prodName].dados[size]) 
+                      : null     
           })                      
         } 
       });
@@ -123,7 +125,8 @@ export default class ProductComponent extends React.Component {
         })
         prod = {
           [prodName] : {
-            dados : sizes
+              tipo_categoria: 0,
+              dados : sizes
             }
         }
         break;
@@ -140,7 +143,7 @@ export default class ProductComponent extends React.Component {
         });
         prod = {
           [prodName] : {
-            tipo_categoria : this.state[prodName].tipo_categoria,
+            tipo_categoria : 1,
             valor_unitario : typeObj.price ? typeObj.price : this.state[prodName].valor_unitario,
             dados
           }
@@ -156,7 +159,7 @@ export default class ProductComponent extends React.Component {
         });
         prod = {
           [prodName] : {
-            tipo_categoria : this.state[prodName].tipo_categoria,
+            tipo_categoria : 2,
             dados
           }
         }
@@ -169,20 +172,14 @@ export default class ProductComponent extends React.Component {
         });
         prod = {
           [prodName] : {
-            tipo_categoria : this.state[prodName].tipo_categoria,
-            valor_unitario : this.state[prodName].valor_unitario,
+            tipo_categoria : 3,
+            valor_unitario : typeObj.price ? typeObj.price : this.state[prodName].valor_unitario,
             dados
           }
         }
         break;
     }    
-    this.setState(prod, () => {
-      const keys = Object.keys(this.state)
-                  .filter((item) => !["size", "type"].includes(item))
-      const obj = keys.reduce((o, key) => ({...o, [key]: this.state[key]}), {})
-      console.log(keys , obj);
-    });
-    
+    this.setState(prod);    
   }
   getCategorySet(categoryName) {
     return Object.keys(this.state.categorias).find((item) =>
@@ -206,6 +203,9 @@ export default class ProductComponent extends React.Component {
   }
     
   render() {
+    const prods = Object.keys(this.state)
+                    .filter((item) => !["size", "type"].includes(item))
+                    .reduce((o, key) => ({...o, [key]: this.state[key]}), {})
     return (
       e(ErrorBoundary, null,
         e(Container, { fluid: true }, [
@@ -215,7 +215,7 @@ export default class ProductComponent extends React.Component {
           }),
           e(this.state.size.sizeCpt, this.state.size.sizeProps),
           e(this.state.type.typeCpt, this.state.type.typeProps),
-          e(TotalComponent, {key: 4})
+          e(TotalComponent, {key: 4, prods})
         ])
       )
     );

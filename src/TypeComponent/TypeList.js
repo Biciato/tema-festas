@@ -22,18 +22,18 @@ export default class TypeList extends React.Component {
   handleQtyChange(e) {
     let subtypeObj = {};
     if (this.getProdCategory() === 2) {
+      const price = document.querySelectorAll(
+        `[data="${e.target.attributes.data.value.replace('-qty','')}"]`
+      )[0].value;
       subtypeObj = {
-        [e.target.attributes.data.value]: {
+        [e.target.attributes.data.value.replace('-qty', '')]: {
           qty: e.target.value,
-          price: this.state.subtypeObj[e.target.attributes.data.value] &&
-                this.state.subtypeObj[e.target.attributes.data.value].price
-            ? this.state.subtypeObj[e.target.attributes.data.value].price
-            : parseFloat(this.getItemPrice(e.target.attributes.data.value)).toFixed(2)
+          price
         }
       }
     } else {
       subtypeObj = {
-        [e.target.attributes.data.value]: {
+        [e.target.attributes.data.value.replace('-qty', '')]: {
           qty: e.target.value
         }
       }
@@ -43,19 +43,30 @@ export default class TypeList extends React.Component {
     );    
   }
   handlePriceChange(e) {
-    const price = e.target.value.replace(/\D/,'')
+    const qty = document.querySelectorAll(
+      `[data="${e.target.attributes.data.value}-qty"]`
+    )[0].value;
+    const price = e.target.value
     const subtypeObj = {
       [e.target.attributes.data.value]: {
-        qty: this.state.subtypeObj[e.target.attributes.data.value] &&
-             this.state.subtypeObj[e.target.attributes.data.value].qty
-        ? this.state.subtypeObj[e.target.attributes.data.value].qty
-        : 0,
-        price: parseFloat(price).toFixed(2)
+        qty,
+        price: this.moeda(price)
       }
     }
     this.setState({subtypeObj}, () => 
-      this.props.onSubtypeChange({subtype: this.state})
+      qty === '' 
+        ? null 
+        : this.props.onSubtypeChange({subtype: this.state})
     );    
+  }
+  moeda(v){
+    v = v.replace(/\D/g,"") // permite digitar apenas numero
+    v = v.replace(/(\d{1})(\d{14})$/,"$1.$2") // coloca ponto antes dos ultimos digitos
+    v = v.replace(/(\d{1})(\d{11})$/,"$1.$2") // coloca ponto antes dos ultimos 11 digitos
+    v = v.replace(/(\d{1})(\d{8})$/,"$1.$2") // coloca ponto antes dos ultimos 8 digitos
+    v = v.replace(/(\d{1})(\d{5})$/,"$1.$2") // coloca ponto antes dos ultimos 5 digitos
+    v = v.replace(/(\d{1})(\d{1,2})$/,"$1,$2") // coloca virgula antes dos ultimos 2 digitos
+    return v;
   }
   getProdCategory() {
     return [0, 1, 2, 3].find((item) => Products.categories[item][this.props.type]);
@@ -94,13 +105,13 @@ export default class TypeList extends React.Component {
               e(InputGroup.Prepend, {key: 'c-1'}, e(InputGroup.Text, null, 'Preço')),
               e(FormControl, {
                 key: 'c-2', 
-                min: 0, 
+                value: this.getProdCategory() === 2 
+                        ? this.state.subtypeObj[item] 
+                          ? this.state.subtypeObj[item].price 
+                          : this.getItemPrice(item).toLocaleString('pt-br', {minimumFractionDigits: 2})
+                            : null, 
                 onChange: this.handlePriceChange, 
                 data: item, 
-                type: 'number',
-                placeholder: this.getProdCategory() !== 2 
-                              ? '' 
-                              : parseFloat(this.getItemPrice(item)).toFixed(2)
               })
             ]
           ),
@@ -111,7 +122,7 @@ export default class TypeList extends React.Component {
               type: 'number', 
               min: 0, 
               onChange: this.handleQtyChange, 
-              data: item,
+              data: item + '-qty',
             })
           ])
         ])
