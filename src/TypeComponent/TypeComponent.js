@@ -15,12 +15,23 @@ export default class TypeComponent extends React.Component {
     this.handleTypeChange = this.handleTypeChange.bind(this);
     this.handleSubtypeChange = this.handleSubtypeChange.bind(this);
     this.handlePriceChange = this.handlePriceChange.bind(this);
-    this.state = { type: '', price: this.getProdPrice().toLocaleString('pt-br', {minimumFractionDigits: 2}) };
+    this.state = { 
+      type: 'não possui', 
+      price: this.getProdPrice().toLocaleString('pt-br', {
+        style: 'currency', 
+        currency: 'BRL', 
+        minimumFractionDigits: 2
+      }) 
+    };
   }
   componentDidUpdate(prevProps){
     if(prevProps.size !== this.props.size){
         this.setState({          
-          price: this.getProdPrice().toLocaleString('pt-br', {minimumFractionDigits: 2})
+          price: this.getProdPrice().toLocaleString('pt-br', {
+            style: 'currency', 
+            currency: 'BRL', 
+            minimumFractionDigits: 2
+          })
         });
     }
   }
@@ -31,18 +42,18 @@ export default class TypeComponent extends React.Component {
     v = v.replace(/(\d{1})(\d{8})$/,"$1.$2") // coloca ponto antes dos ultimos 8 digitos
     v = v.replace(/(\d{1})(\d{5})$/,"$1.$2") // coloca ponto antes dos ultimos 5 digitos
     v = v.replace(/(\d{1})(\d{1,2})$/,"$1,$2") // coloca virgula antes dos ultimos 2 digitos
-    return v;
+    return 'R$ ' + v;
   }
 
   handleTypeChange(type) {
     this.setState({ 
       type }, 
-      () => this.props.onTypeChange(type, this.props.prodName)
+      () => this.props.onTypeChange(type, this.props.prodName, this.props.size)
     );
   }
   handleSubtypeChange(subtype) {
     this.setState(subtype, () => {
-      this.props.onSubtypeSet(this.state, this.props.prodName)
+      this.props.onSubtypeSet(this.state, this.props.prodName, this.props.size)
     });
   }
   handlePriceChange(e) {
@@ -84,12 +95,8 @@ export default class TypeComponent extends React.Component {
 
   render() {
     return (
-      e(Row, { bsPrefix: 'row m-1' },
+      e(Row, { bsPrefix: 'row m-1' + (this.props.display ? ' d-none' : '') },
         e(Col, null, [
-          e('label', {
-            className: 'label bg-danger',
-            key: 1
-          }, 'Subtipo'),
           e(TypeSelect, {
             onTypeChange: this.handleTypeChange,
             key: 2,
@@ -99,18 +106,30 @@ export default class TypeComponent extends React.Component {
               key: 3, 
               className: this.getProdCategory() === 2 ? 'd-none' : '' 
             }, [
-              e(InputGroup.Prepend, { key: 'i-1' },
-                e(InputGroup.Text, null, 'R$')),
+              e('label', {
+                key: 'c-1',
+                style: {
+                  width: '61%',
+                  borderBottom: '1px solid #D7D7D7',
+                  marginRight: '1em',
+                  marginBottom: 0,
+                  padding: '0.2em 0.5em'
+                }
+              }, 'Valor Geral'),
               e(FormControl, { 
                 key: 'i-2', 
                 value: this.state.price,
-                onChange: this.handlePriceChange 
+                onChange: this.handlePriceChange, 
+                style: {
+                  borderRadius: '5px'
+                }
               })
             ]
           ),
           e(TypeList, {
-            type: this.state.type === 'Não Possui' ? this.props.prodName : this.state.type,
+            type: this.state.type,
             key: 4,
+            prodName: this.props.prodName,
             style: { borderBottom: 'none' },
             onSubtypeChange: this.handleSubtypeChange
           })

@@ -7,17 +7,17 @@ const e = React.createElement
 export default class TypeSelect extends React.Component {
   constructor(props) {
     super(props)
-    this.handleSubtypeChange = this.handleSubtypeChange.bind(this)
+    this.handleTypeChange = this.handleTypeChange.bind(this)
   }
-  handleSubtypeChange(subtype) {
+  handleTypeChange(subtype) {
     this.props.onTypeChange(subtype.value, this.props.prodName)
   }
   getProdCategory() {
-    return [0, 1, 2, 3].filter((item) => Products.categories[item][this.props.prodName])[0];
+    return [0, 1, 2, 3].filter((item) => Products.categories[item][this.props.prodName]).shift();
   }
   render() {
     const list = [0, 1].includes(this.getProdCategory()) 
-      ? ['poa', 'liso', 'números', 'temas'].map((item) => ({
+      ? ['poa', 'liso', 'temas'].map((item) => ({
         value: item,
         label: item
       }))
@@ -27,8 +27,13 @@ export default class TypeSelect extends React.Component {
       }]
     return (
       e(Select, {
+        className: 
+          [2,3].includes(this.getProdCategory()) || this.props.prodName.includes('ela') 
+            ? 'd-none' 
+            : '',
+        defaultValue: {value: 'Subtipo', label: 'Subtipo'},
         options: list,
-        onChange: this.handleSubtypeChange
+        onChange: this.handleTypeChange
       })
     )
   }

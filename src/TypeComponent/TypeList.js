@@ -69,10 +69,10 @@ export default class TypeList extends React.Component {
     return v;
   }
   getProdCategory() {
-    return [0, 1, 2, 3].find((item) => Products.categories[item][this.props.type]);
+    return [0, 1, 2, 3].find((item) => Products.categories[item][this.props.prodName]);
   }
   getItemPrice(item) {
-    return Products.categories[2][this.props.type]
+    return Products.categories[2][this.props.prodName]
       .filter((i) => i.name === item)
       .map((i) => i.price)
       .shift();
@@ -80,52 +80,86 @@ export default class TypeList extends React.Component {
 
   render() {
     let types = [];
-    if (!this.props.type) {
-      return null;
-    } else if (this.props.type === 'etiquetas') {
-      types = Products.categories[3].etiquetas.names;
-    } else if (!Types.hasOwnProperty(this.props.type) && this.props.type !== 'números') {
-      types = Products.categories[2][this.props.type].map((item) => item.name)
-    } else {
-      types = this.props.type === 'números' ? [...Array(10).keys()].map(x => ++x) : Types[this.props.type];
-    }    
+    switch(this.getProdCategory()) {
+      case 2:
+        types = Products.categories[2][this.props.prodName].map((item) => item.name)
+        break
+      case 3:
+        types = Products.categories[3].etiquetas.names;
+        break
+      default:
+        types = this.props.type.includes('ela') 
+          ? [...Array(10).keys()].map(x => ++x) 
+          : Types[this.props.type];
+    }
+    if (types === undefined) {
+      return null
+    }
     return types.map((item, idx) => {
       return e(
-        Row, {key: idx},
+        Row, {key: idx, style: {backgroundColor: ((idx % 2) === 0 ? 'white' : '#F8F8F8')}},
         e(Col, null, [
-          e(Badge, {
+          e('label', {
             variant: 'info',
-            key: 'b-1'
+            key: 'b-1',
+            style: {
+              width: '61%',
+              marginRight: '1em',
+              marginBottom: 0,
+              padding: '0.2em 0.5em'
+            }
           }, item),
+          e('span', {style: {}}, '-'),
+          e(FormControl, {
+            key: 'c-2', 
+            min: 0, 
+            onChange: this.handleQtyChange, 
+            data: item + '-qty',
+            placeholder: 0,
+            style: {
+              border: 'none',
+              display: 'inline-block',
+              width: '23%',
+              backgroundColor: 'inherit',
+              textAlign: 'center'
+            }
+          }),
+          e('span', {style: {}}, '+'),
           e(InputGroup, {
-              key: 'b-2', 
-              size: 'sm', 
-              className: this.getProdCategory() !== 2 ? 'd-none' : '' 
-            }, [
-              e(InputGroup.Prepend, {key: 'c-1'}, e(InputGroup.Text, null, 'Preço')),
-              e(FormControl, {
-                key: 'c-2', 
-                value: this.getProdCategory() === 2 
-                        ? this.state.subtypeObj[item] 
-                          ? this.state.subtypeObj[item].price 
-                          : this.getItemPrice(item).toLocaleString('pt-br', {minimumFractionDigits: 2})
-                            : null, 
-                onChange: this.handlePriceChange, 
-                data: item, 
-              })
-            ]
-          ),
-          e(InputGroup, {key: 'b-3', size: 'sm'}, [
-            e(InputGroup.Prepend, {key: 'c-1'}, e(InputGroup.Text, null, 'Quantidade')),
+            key: 'b-2', 
+            size: 'sm', 
+            className: this.getProdCategory() !== 2 ? 'd-none' : '' 
+          }, [
+            e('label', {
+              key: 'c-1',
+              style: {
+                width: '61%',
+                marginRight: '1em',
+                marginBottom: 0,
+                padding: '0.2em 0.5em',
+                color: '#747474',
+                borderTop: '1px solid #D7D7D7',
+                paddingTop: '0.7em'
+              }
+            }, 'Valor Unitário'),
             e(FormControl, {
               key: 'c-2', 
-              type: 'number', 
-              min: 0, 
-              onChange: this.handleQtyChange, 
-              data: item + '-qty',
+              value: this.getProdCategory() === 2 
+                      ? this.state.subtypeObj[item] 
+                        ? this.state.subtypeObj[item].price 
+                        : this.getItemPrice(item).toLocaleString('pt-br', {minimumFractionDigits: 2})
+                          : null, 
+              onChange: this.handlePriceChange, 
+              data: item, 
+              style: {
+                borderRadius: '5px',
+                backgroundColor: 'inherit',
+                textAlign: 'center'
+              }
             })
-          ])
-        ])
+          ]
+        ),          
+      ])
       )
     })
   }

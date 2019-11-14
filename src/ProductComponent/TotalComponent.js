@@ -1,7 +1,8 @@
 import React from 'react'
-import Badge from 'react-bootstrap/Badge';
-import './TotalComponent.css';
-import { Products } from '../resources/products';
+import './TotalComponent.css'
+import { Products } from '../resources/products'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faShoppingBag } from '@fortawesome/free-solid-svg-icons'
 
 export default class TotalComponent extends React.Component {
     constructor(props) {
@@ -18,16 +19,18 @@ export default class TotalComponent extends React.Component {
         this.getCat0TotalPerProd = this.getCat0TotalPerProd.bind(this);
         this.getCat0PerTypes = this.getCat0PerTypes.bind(this);
         this.getCat0PerSubtypes = this.getCat0PerSubtypes.bind(this);
-        this.state = { total: '0,00' };
+        this.handleClick = this.handleClick.bind(this);
+        this.state = { totalPrice: '0,00', totalQty: 0 };
     }
     componentDidUpdate(prevProps) {
         if (prevProps.prods !== this.props.prods) {
             this.setState({
-                total: 
+                totalPrice: 
                     (this.getTotalCat0(this.props.prods) +
                     this.getTotalCat1(this.props.prods) +
                     this.getTotalCat2(this.props.prods) +
-                    this.getTotalCat3(this.props.prods)).toLocaleString('pt-br', { minimumFractionDigits: 2 })
+                    this.getTotalCat3(this.props.prods)).toLocaleString('pt-br', { minimumFractionDigits: 2 }),
+                totalQty: this.getTotalQty()
             });
         }
     }
@@ -149,21 +152,97 @@ export default class TotalComponent extends React.Component {
                     this.props.prods[item].dados[type][subtype][st] !== ''
                 ).reduce((o, k) =>
                     parseInt(this.props.prods[item].dados[type][subtype][k]) + o, 0
-                ) * parseFloat(this.props.prods[item].dados[type].valor_unitario.replace(',', '.'))
+                ) * this.props.prods[item].dados[type].valor_unitario
             )
         } else {
             return 0;
         }   
     }
+    getTotalQtyCat0(prods) {
+        return Object.keys(prods)
+                .filter((el) => prods[el].tipo_categoria === 0)
+                .reduce((old, key) =>
+                    Object.keys(prods[key].dados).reduce((ol, ke) => 
+                        Object.keys(prods[key].dados[ke])
+                            .filter((e) => e !== 'valor_unitario' || prods[key].dados[ke][e] !== null)
+                            .reduce((o, k) => 
+                                this.getTotalQtyCat0LastLevel(prods, key, ke, k)                 
+                                + o, 0
+                            )
+                        + ol, 0
+                    ) 
+                    + old, 0    
+                )        
+    }
+    getTotalQtyCat0LastLevel(prods, key, ke, k) {
+        if(k !== 'valor_unitario' && prods[key].dados[ke][k] !== null) {
+            return(
+                Object.keys(prods[key].dados[ke][k]).reduce((l, i) => 
+                    parseInt(prods[key].dados[ke][k][i]) + l, 0
+                )  
+            )
+        } else {
+            return 0
+        }        
+    }
+    getTotalQtyCat1(prods) {
+        return Object.keys(prods)
+                .filter((el) => prods[el].tipo_categoria === 1)
+                .reduce((old, key) =>
+                    Object.keys(prods[key].dados).reduce((ol, ke) => 
+                        Object.keys(prods[key].dados[ke])
+                            .reduce((o, k) => parseInt(prods[key].dados[ke][k]) + o, 0)
+                        + ol, 0
+                    ) 
+                    + old, 0    
+                )        
+    }
+    getTotalQtyCat2(prods) {
+        return Object.keys(prods)
+                .filter((el) => prods[el].tipo_categoria === 2)
+                .reduce((old, key) =>
+                    Object.keys(prods[key].dados).reduce((ol, ke) => 
+                        parseInt(prods[key].dados[ke].quantidade)
+                        + ol, 0
+                    ) 
+                    + old, 0    
+                )        
+    }
+    
+    getTotalQtyCat3(prods) {
+        if (prods['etiquetas']) {
+            return Object
+                .keys(prods['etiquetas'].dados)
+                .reduce((old, key) => parseInt(prods['etiquetas'].dados[key]) + old, 0 )    
+        } else {
+            return 0
+        }
+            
+    }
+    getTotalQty() {
+        if (this.props.prods !== null) {
+            return(
+                this.getTotalQtyCat0(this.props.prods) +
+                this.getTotalQtyCat1(this.props.prods) +
+                this.getTotalQtyCat2(this.props.prods) +
+                this.getTotalQtyCat3(this.props.prods)
+            )
+        } else {
+            return 0
+        }        
+    }
+    handleClick() {
+        this.props.onCartClick(this.state.totalQty, this.state.totalPrice)
+    }
     render() {
+        console.log(this.getTotalQty()) 
         return (
-            <div className="footer">
-                <h6 className="bg-danger text-light p-1 text-right">
-                    TOTAL:
-                    <Badge variant="danger">
-                        {this.state.total}
-                    </Badge>
-                </h6>
+            <div className={"footer" + (this.props.display ? ' d-none' : '')}>
+                <span onClick={this.handleClick}>
+                    <FontAwesomeIcon icon={faShoppingBag}/>
+                    Sacola:
+                </span>
+                <span>R$ {this.state.totalPrice}</span>
             </div>
         );
     }

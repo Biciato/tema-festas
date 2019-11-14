@@ -9,6 +9,7 @@
     font-weight: bold;
     font-size: 20px;
     line-height: 27px;
+    text-align: center;
     padding: 0.3em 1em;
-    z-index: 1000;
+    cursor: pointer;
 }
